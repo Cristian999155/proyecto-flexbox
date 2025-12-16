@@ -11,14 +11,14 @@ import {
   orderBy,
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// TODO: reemplaza estos valores con tu configuración real de Firebase
+// Configuración Firebase
 const firebaseConfig = {
-apiKey: "AIzaSyA7hFnFDG776EzCxws2sRFOK6FHZwms6Fs",
+  apiKey: "AIzaSyA7hFnFDG776EzCxws2sRFOK6FHZwms6Fs",
   authDomain: "database-flexbox.firebaseapp.com",
   projectId: "database-flexbox",
   storageBucket: "database-flexbox.firebasestorage.app",
   messagingSenderId: "1004724093374",
-  appId: "1:1004724093374:web:aa8ce2b9e74b93541179ef"
+  appId: "1:1004724093374:web:aa8ce2b9e74b93541179ef",
 };
 
 // Inicializar Firebase y Firestore
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const snapshot = await getDocs(q);
 
-      allQuotes = snapshot.docs.map((doc, index) => {
+      allQuotes = snapshot.docs.map((doc) => {
         const data = doc.data();
         const createdAt =
           data.createdAt && typeof data.createdAt.toDate === "function"
@@ -108,8 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
             : null;
 
         return {
+          // ID real de Firestore (no se muestra, pero lo tenemos por si acaso)
           docId: doc.id,
-          uiCode: `COT-${1000 + index + 1}`, // ID visual, luego puedes cambiarlo por doc.id
+          // ID visual para la UI: usamos el campo quoteCode guardado en la cotización.
+          // Si por alguna razón no existe, usamos el doc.id como respaldo.
+          uiCode: data.quoteCode || doc.id,
           fullName: data.fullName || "",
           productName: data.productName || "",
           status: data.status || "pendiente",
@@ -222,7 +225,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!modalOverlay) return;
     modalOverlay.classList.remove("is-open");
     modalOverlay.setAttribute("aria-hidden", "true");
-    if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === "function") {
+    if (
+      lastFocusedBeforeModal &&
+      typeof lastFocusedBeforeModal.focus === "function"
+    ) {
       lastFocusedBeforeModal.focus();
     }
   }

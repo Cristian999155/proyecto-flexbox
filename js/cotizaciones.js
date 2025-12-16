@@ -11,15 +11,14 @@ import {
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// Pega aquí tu configuración real de Firebase
+// Configuración real de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA7hFnFDG776EzCxws2sRFOK6FHZwms6Fs",
   authDomain: "database-flexbox.firebaseapp.com",
   projectId: "database-flexbox",
   storageBucket: "database-flexbox.firebasestorage.app",
   messagingSenderId: "1004724093374",
-  appId: "1:1004724093374:web:aa8ce2b9e74b93541179ef"
-
+  appId: "1:1004724093374:web:aa8ce2b9e74b93541179ef",
 };
 
 // Inicializar Firebase y Firestore
@@ -78,6 +77,22 @@ document.addEventListener("DOMContentLoaded", function () {
       comments: document.getElementById("comments"),
     },
   };
+
+  // ===============================
+  // 3.1 Generador de ID legible (quoteCode)
+  // ===============================
+  // Formato: COT-AAAAMMDD-XXXX (XXXX = número aleatorio de 4 dígitos)
+  function createQuoteCode() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const randomPart = String(Math.floor(Math.random() * 10000)).padStart(
+      4,
+      "0"
+    );
+    return `COT-${year}${month}${day}-${randomPart}`;
+  }
 
   // Limpia errores de todos los campos
   function clearFieldErrors() {
@@ -254,8 +269,14 @@ document.addEventListener("DOMContentLoaded", function () {
         .map((link) => link.trim())
         .filter((link) => link.length > 0);
 
+      // Generar código legible de cotización
+      const quoteCode = createQuoteCode();
+
       // Objeto para Firestore
       const quoteData = {
+        // ID legible para UI
+        quoteCode,
+
         // Paso 1
         productName,
         productLinksRaw,
@@ -294,8 +315,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error al guardar la cotización:", error);
       if (globalError) {
         globalError.textContent =
-          "Hubo un error al enviar tu solicitud. Por favor intenta nuevamente."
-          + (error && error.message ? ` Detalle: ${error.message}` : "");
+          "Hubo un error al enviar tu solicitud. Por favor intenta nuevamente." +
+          (error && error.message ? ` Detalle: ${error.message}` : "");
       }
     } finally {
       if (submitBtn) {
