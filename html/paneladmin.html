@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dashboard de cotizaciones | FlexBoxco</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tipografía -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/paneladmin.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-logo-circle">FB</div>
+          <div class="brand-text">
+            <span class="brand-title">FlexBoxco</span>
+            <span class="brand-subtitle">Admin Panel</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegación principal">
+          <a href="#" class="sidebar-link sidebar-link--active">
+            <span class="sidebar-link-bullet"></span>
+            Dashboard
+          </a>
+          <a href="#" class="sidebar-link">
+            <span class="sidebar-link-bullet"></span>
+            Cotizaciones
+          </a>
+          <a href="#" class="sidebar-link">
+            <span class="sidebar-link-bullet"></span>
+            Calculadora
+          </a>
+          <a href="#" class="sidebar-link">
+            <span class="sidebar-link-bullet"></span>
+            Ajustes
+          </a>
+          <a href="#" class="sidebar-link">
+            <span class="sidebar-link-bullet"></span>
+            Soporte
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="sidebar-user-avatar">C</div>
+            <div class="sidebar-user-text">
+              <span class="sidebar-user-name">Cristian Silva</span>
+              <span class="sidebar-user-role">Administrador</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenido principal -->
+      <main class="dashboard-main">
+        <!-- Header de la sección -->
+        <header class="main-header-bar">
+          <div>
+            <h1 class="page-title">Gestionar cotizaciones</h1>
+            <p class="page-subtitle">
+              Visualiza y administra las solicitudes de cotización creadas desde el sitio web.
+            </p>
+          </div>
+          <div class="header-actions">
+            <button class="btn-secondary" type="button">Exportar</button>
+            <button class="btn-primary" type="button">Nueva cotización</button>
+          </div>
+        </header>
+
+        <!-- Filtros -->
+        <section class="card card-filters" aria-label="Filtros de cotizaciones">
+          <div class="filters-row">
+            <div class="filter-group filter-search">
+              <label for="search-input" class="filter-label">Buscar</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔍</span>
+                <input
+                  id="search-input"
+                  type="text"
+                  class="text-input"
+                  placeholder="Buscar por cliente, producto o ID..."
+                />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label for="date-from" class="filter-label">Desde</label>
+              <input
+                id="date-from"
+                type="date"
+                class="text-input"
+              />
+            </div>
+
+            <div class="filter-group">
+              <label for="date-to" class="filter-label">Hasta</label>
+              <input
+                id="date-to"
+                type="date"
+                class="text-input"
+              />
+            </div>
+
+            <div class="filter-group filter-actions">
+              <button id="clear-filters" type="button" class="btn-ghost">
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tabla -->
+        <section class="card card-table" aria-label="Listado de cotizaciones">
+          <div class="card-header">
+            <h2 class="card-title">Cotizaciones recientes</h2>
+            <span class="card-subtitle" id="quotes-count">
+              Cargando...
+            </span>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="quotes-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre cliente</th>
+                  <th>Producto</th>
+                  <th>Fecha solicitud</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="quotes-tbody">
+                <!-- Filas generadas por JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modal de detalle -->
+    <div
+      class="modal-overlay"
+      id="quote-modal-overlay"
+      aria-hidden="true"
+    >
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quote-modal-title"
+      >
+        <button
+          type="button"
+          class="modal-close"
+          id="quote-modal-close"
+          aria-label="Cerrar detalle de cotización"
+        >
+          ×
+        </button>
+        <h2 class="modal-title" id="quote-modal-title">
+          Detalle de cotización
+        </h2>
+        <div class="modal-body" id="quote-modal-content">
+          <!-- Contenido generado por JS -->
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-secondary"
+            id="quote-modal-close-secondary"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/js/paneladmin.js"></script>
+  </body>
+</html>
