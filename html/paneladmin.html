@@ -144,7 +144,7 @@
       </main>
     </div>
 
-    <!-- Modal de detalle -->
+    <!-- Modal "Responder cotización" -->
     <div
       class="modal-overlay"
       id="quote-modal-overlay"
@@ -164,20 +164,210 @@
         >
           ×
         </button>
-        <h2 class="modal-title" id="quote-modal-title">
-          Detalle de cotización
-        </h2>
-        <div class="modal-body" id="quote-modal-content">
-          <!-- Contenido generado por JS -->
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn-secondary"
-            id="quote-modal-close-secondary"
+
+        <header class="modal-header">
+          <div>
+            <h2 class="modal-title" id="quote-modal-title">
+              Responder cotización
+            </h2>
+            <p class="modal-subtitle">
+              Cotización:
+              <span id="modal-quote-code">—</span>
+            </p>
+          </div>
+          <span
+            id="modal-status-badge"
+            class="status-badge status-pending"
           >
-            Cerrar
-          </button>
+            Pendiente
+          </span>
+        </header>
+
+        <div class="modal-body">
+          <div class="modal-body-grid">
+            <!-- Columna izquierda: datos de la solicitud -->
+            <section class="modal-section">
+              <h3 class="modal-section-title">Datos del cliente</h3>
+              <dl class="details-list">
+                <div class="details-row">
+                  <dt>Cliente</dt>
+                  <dd id="detail-fullName">—</dd>
+                </div>
+                <div class="details-row">
+                  <dt>Correo</dt>
+                  <dd>
+                    <div class="details-inline">
+                      <span id="detail-email-text">—</span>
+                    </div>
+                  </dd>
+                </div>
+                <div class="details-row">
+                  <dt>Teléfono</dt>
+                  <dd id="detail-phone">—</dd>
+                </div>
+                <div class="details-row">
+                  <dt>Fecha solicitud</dt>
+                  <dd id="detail-createdAt">—</dd>
+                </div>
+                <div class="details-row">
+                  <dt>Ubicación</dt>
+                  <dd id="detail-location">—</dd>
+                </div>
+              </dl>
+
+              <h3 class="modal-section-title">Detalles de la solicitud</h3>
+              <dl class="details-list">
+                <div class="details-row">
+                  <dt>Producto</dt>
+                  <dd id="detail-productName">—</dd>
+                </div>
+              </dl>
+
+              <div id="detail-links-block" class="details-links-block" hidden>
+                <h4 class="details-links-title">Enlaces del producto</h4>
+                <div class="details-scroll-box" id="detail-links-scroll">
+                  <ul id="detail-links-list" class="details-links-list">
+                    <!-- Links generados por JS -->
+                  </ul>
+                </div>
+              </div>
+
+              <div
+                id="detail-comments-block"
+                class="details-links-block"
+                hidden
+              >
+                <h4 class="details-links-title">Mensaje del cliente</h4>
+                <div class="details-scroll-box" id="detail-comments-scroll">
+                  <p
+                    id="detail-comments-text"
+                    class="details-comments-text"
+                  ></p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Columna derecha: formulario de respuesta -->
+            <section class="modal-section">
+              <h3 class="modal-section-title">Correo de respuesta</h3>
+
+              <form id="quote-reply-form" novalidate>
+                <div class="form-field">
+                  <label for="reply-subject" class="field-label">Asunto</label>
+                  <input
+                    type="text"
+                    id="reply-subject"
+                    class="text-input text-input--block"
+                    required
+                  />
+                  <p class="field-error" id="error-subject"></p>
+                </div>
+
+                <div class="form-field">
+                  <label for="reply-message" class="field-label">Mensaje</label>
+                  <textarea
+                    id="reply-message"
+                    class="text-area"
+                    rows="6"
+                    required
+                  ></textarea>
+                  <p class="field-error" id="error-message"></p>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-ghost btn-advanced-toggle"
+                  id="advanced-toggle"
+                >
+                  Opciones avanzadas
+                </button>
+
+                <div class="advanced-section" id="advanced-section" hidden>
+                  <div class="form-field">
+                    <label for="reply-to" class="field-label">
+                      Reply-to (responder a)
+                    </label>
+                    <input
+                      type="email"
+                      id="reply-to"
+                      class="text-input text-input--block"
+                      placeholder="Opcional"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="reply-cc" class="field-label">CC</label>
+                    <input
+                      type="text"
+                      id="reply-cc"
+                      class="text-input text-input--block"
+                      placeholder="Correos separados por coma"
+                    />
+                  </div>
+                  <div class="form-field">
+                    <label for="reply-bcc" class="field-label">BCC</label>
+                    <input
+                      type="text"
+                      id="reply-bcc"
+                      class="text-input text-input--block"
+                      placeholder="Correos separados por coma"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="pdf-file" class="field-label">Adjuntar PDF</label>
+                  <div class="file-input-wrapper">
+                    <input
+                      type="file"
+                      id="pdf-file"
+                      class="file-input"
+                      accept="application/pdf"
+                    />
+                    <button
+                      type="button"
+                      class="btn-secondary btn-file-trigger"
+                      id="pdf-trigger"
+                    >
+                      Elegir archivo
+                    </button>
+                    <span class="file-helper-text">
+                      Solo PDF, máximo 10 MB.
+                    </span>
+                  </div>
+                  <div class="file-selected" id="file-selected" hidden>
+                    <span id="file-selected-name"></span>
+                    <button
+                      type="button"
+                      class="btn-link"
+                      id="file-remove"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                  <p class="field-error" id="error-pdf"></p>
+                </div>
+
+                <p class="modal-form-status" id="modal-form-status"></p>
+
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    id="quote-modal-close-secondary"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn-primary"
+                    id="quote-modal-send"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
         </div>
       </div>
     </div>
