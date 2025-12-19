@@ -1,6 +1,6 @@
 // paneladmin.js
 // IMPORTANTE: este archivo debe cargarse con:
-// <script type="module" src="paneladmin.js"></script>
+// <script type="module" src="/js/paneladmin.js"></script>
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import {
@@ -11,7 +11,7 @@ import {
   orderBy,
   getDoc,
   doc,
-  // updateDoc, // Descomenta si luego quieres actualizar el estado
+  updateDoc, // <- ahora sí lo usamos
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 // Configuración Firebase
@@ -28,6 +28,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// 🔴 PARA DESARROLLO LOCAL
+const BACKEND_BASE_URL = "http://localhost:3000";
+// 👉 Cuando despliegues a Render, cambia a:
+// const BACKEND_BASE_URL = "https://flexboxco-email-service.onrender.com";
+
+// Clave admin que debe coincidir con process.env.ADMIN_KEY del backend
+const ADMIN_KEY_FRONTEND = "F1exB0xco_2025_SUPER-SECRET-KEY_93kLs!zP7"; // <-- cámbiala por tu clave real
+
 document.addEventListener("DOMContentLoaded", () => {
   const tbody = document.getElementById("quotes-tbody");
   const searchInput = document.getElementById("search-input");
@@ -36,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearFiltersBtn = document.getElementById("clear-filters");
   const quotesCountEl = document.getElementById("quotes-count");
 
-  // Modal
+  // ----------- Referencias del modal ----------- //
   const modalOverlay = document.getElementById("quote-modal-overlay");
   const modalCloseBtn = document.getElementById("quote-modal-close");
   const modalCloseSecondary = document.getElementById(
@@ -112,9 +120,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function statusMeta(status) {
     const normalized = (status || "").toLowerCase();
     switch (normalized) {
+      // Estado que quieres usar para "enviada" (verde)
+      case "enviada":
+      case "sent":
+        return { label: "Enviada", className: "status-approved" };
+
+      // Por compatibilidad si algún día usas "aprobada"
       case "aprobada":
       case "approved":
         return { label: "Aprobada", className: "status-approved" };
+
       case "rechazada":
       case "cancelada":
       case "cancelled":
@@ -138,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fileSelected.hidden = true;
     }
     if (fileSelectedName) {
-      fileSelectedName.textContent = ""; // limpiar nombre del archivo
+      fileSelectedName.textContent = "";
     }
 
     if (pdfInput) {
@@ -522,12 +537,12 @@ Equipo FlexBoxco`;
       event.preventDefault();
       pdfInput.value = "";
       if (fileSelected) fileSelected.hidden = true;
-      if (fileSelectedName) fileSelectedName.textContent = ""; // <-- clave
+      if (fileSelectedName) fileSelectedName.textContent = "";
       if (errorPdf) errorPdf.textContent = "";
     });
   }
 
-  // ------- Envío simulado del formulario -------
+  // ------- Envío REAL del formulario (llamando a tu backend) -------
 
   if (replyForm && sendBtn) {
     replyForm.addEventListener("submit", async (event) => {
@@ -548,7 +563,26 @@ Equipo FlexBoxco`;
       const message = messageInput?.value.trim() || "";
       const file = pdfInput?.files && pdfInput.files[0];
 
+      const toEmail =
+        (currentQuoteData && currentQuoteData.email) ||
+        (detailEmailText && detailEmailText.textContent.trim()) ||
+        "";
+
+      const fullName =
+        (currentQuoteData && currentQuoteData.fullName) ||
+        (detailFullName && detailFullName.textContent.trim()) ||
+        "";
+
       let isValid = true;
+
+      if (!toEmail) {
+        isValid = false;
+        if (modalFormStatus) {
+          modalFormStatus.textContent =
+            "No se encontró el correo del cliente. Revisa la cotización.";
+          modalFormStatus.classList.add("modal-form-status--error");
+        }
+      }
 
       if (!subject) {
         if (errorSubject)
@@ -570,35 +604,77 @@ Equipo FlexBoxco`;
 
       if (!isValid) return;
 
+      const formData = new FormData();
+      formData.append("toEmail", toEmail);
+      formData.append("subject", subject);
+      formData.append("message", message);
+      if (fullName) formData.append("fullName", fullName);
+      if (currentQuote && currentQuote.docId) {
+        formData.append("quoteDocId", currentQuote.docId);
+      }
+      formData.append("pdf", file);
+
       if (sendBtn) {
         sendBtn.disabled = true;
         sendBtn.textContent = "Enviando...";
       }
 
       try {
-        // Aquí iría la integración real con Cloud Functions / proveedor de correo
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        const response = await fetch(
+          `${BACKEND_BASE_URL}/api/send-quote-email`,
+          {
+            method: "POST",
+            headers: {
+              "x-admin-key": ADMIN_KEY_FRONTEND,
+            },
+            body: formData,
+          }
+        );
 
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok || !data?.success) {
+          console.error("Error en respuesta backend:", data);
+          if (modalFormStatus) {
+            modalFormStatus.textContent =
+              data?.message ||
+              "Ocurrió un error al enviar la cotización. Intenta nuevamente.";
+            modalFormStatus.classList.add("modal-form-status--error");
+          }
+          return;
+        }
+
+        // ✅ Mostrar éxito en UI
         if (modalFormStatus) {
-          modalFormStatus.textContent =
-            "Cotización enviada correctamente (simulado).";
+          modalFormStatus.textContent = "Cotización enviada correctamente.";
           modalFormStatus.classList.add("modal-form-status--success");
         }
 
-        // OPCIONAL: actualizar estado en Firestore
-        /*
-        if (currentQuote) {
-          const ref = doc(db, "cotizacionesPersonalizadas", currentQuote.docId);
-          await updateDoc(ref, { status: "en_proceso" });
-          currentQuote.status = "en_proceso";
-          applyFiltersAndRender();
+        // ✅ Actualizar estado en Firestore a "enviada"
+        if (currentQuote && currentQuote.docId) {
+          try {
+            await updateDoc(
+              doc(db, "cotizacionesPersonalizadas", currentQuote.docId),
+              { status: "enviada" }
+            );
+
+            // Actualizamos en memoria
+            currentQuote.status = "enviada";
+            if (currentQuoteData) {
+              currentQuoteData.status = "enviada";
+            }
+
+            // Recargar la tabla para ver el badge verde
+            await loadQuotes();
+          } catch (err) {
+            console.error("Error actualizando status en Firestore:", err);
+          }
         }
-        */
       } catch (error) {
-        console.error("Error simulando envío de cotización:", error);
+        console.error("Error llamando al backend:", error);
         if (modalFormStatus) {
           modalFormStatus.textContent =
-            "Ocurrió un error al simular el envío. Intenta nuevamente.";
+            "No se pudo contactar el servidor. Revisa tu conexión o inténtalo más tarde.";
           modalFormStatus.classList.add("modal-form-status--error");
         }
       } finally {
