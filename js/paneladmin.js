@@ -11,10 +11,19 @@ import {
   orderBy,
   getDoc,
   doc,
-  updateDoc, // <- ahora sí lo usamos
+  updateDoc,
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// Configuración Firebase
+// 🔹 Firebase Auth
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+// ===============================
+// 1. Configuración Firebase
+// ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyA7hFnFDG776EzCxws2sRFOK6FHZwms6Fs",
   authDomain: "database-flexbox.firebaseapp.com",
@@ -24,9 +33,12 @@ const firebaseConfig = {
   appId: "1:1004724093374:web:aa8ce2b9e74b93541179ef",
 };
 
-// Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// URL del login (ajusta la ruta si está en otra carpeta)
+const LOGIN_URL = "login.html";
 
 // 🔴 PARA DESARROLLO LOCAL
 const BACKEND_BASE_URL = "http://localhost:3000";
@@ -36,13 +48,20 @@ const BACKEND_BASE_URL = "http://localhost:3000";
 // Clave admin que debe coincidir con process.env.ADMIN_KEY del backend
 const ADMIN_KEY_FRONTEND = "F1exB0xco_2025_SUPER-SECRET-KEY_93kLs!zP7"; // <-- cámbiala por tu clave real
 
+// ===============================
+// 2. Lógica principal
+// ===============================
 document.addEventListener("DOMContentLoaded", () => {
+  // ----------- Referencias DOM generales ----------- //
   const tbody = document.getElementById("quotes-tbody");
   const searchInput = document.getElementById("search-input");
   const dateFromInput = document.getElementById("date-from");
   const dateToInput = document.getElementById("date-to");
   const clearFiltersBtn = document.getElementById("clear-filters");
   const quotesCountEl = document.getElementById("quotes-count");
+
+  // 🔹 Botón de cerrar sesión en el sidebar
+  const logoutBtn = document.getElementById("logout-btn");
 
   // ----------- Referencias del modal ----------- //
   const modalOverlay = document.getElementById("quote-modal-overlay");
@@ -92,8 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQuote = null;
   let currentQuoteData = null;
 
-  // ------- Utilidades -------
-
+  // ===============================
+  // Utilidades
+  // ===============================
   function setTableMessage(message) {
     if (!tbody) return;
     tbody.innerHTML = `
@@ -120,12 +140,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function statusMeta(status) {
     const normalized = (status || "").toLowerCase();
     switch (normalized) {
-      // Estado que quieres usar para "enviada" (verde)
       case "enviada":
       case "sent":
         return { label: "Enviada", className: "status-approved" };
 
-      // Por compatibilidad si algún día usas "aprobada"
       case "aprobada":
       case "approved":
         return { label: "Aprobada", className: "status-approved" };
@@ -134,9 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
       case "cancelada":
       case "cancelled":
         return { label: "Rechazada", className: "status-cancelled" };
+
       case "en_proceso":
       case "procesando":
         return { label: "En proceso", className: "status-processing" };
+
       default:
         return { label: "Pendiente", className: "status-pending" };
     }
@@ -185,8 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
     modalStatusBadge.className = `status-badge ${meta.className}`;
   }
 
-  // ------- Carga de cotizaciones desde Firestore -------
-
+  // ===============================
+  // Carga de cotizaciones
+  // ===============================
   async function loadQuotes() {
     setTableMessage("Cargando cotizaciones...");
 
@@ -225,8 +246,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ------- Filtros y renderizado -------
-
+  // ===============================
+  // Filtros y renderizado tabla
+  // ===============================
   function applyFiltersAndRender() {
     if (!tbody) return;
 
@@ -253,7 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!filtered.length) {
-      setTableMessage("No se encontraron cotizaciones con los filtros actuales.");
+      setTableMessage(
+        "No se encontraron cotizaciones con los filtros actuales."
+      );
       return;
     }
 
@@ -283,8 +307,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ------- Detalle / carga de datos al modal -------
-
+  // ===============================
+  // Carga de detalles al modal
+  // ===============================
   async function loadQuoteDetails(quote) {
     currentQuote = quote;
     currentQuoteData = quote.raw || null;
@@ -381,8 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (messageInput) {
         const safeName = fullName || "cliente";
-        messageInput.value =
-`Hola ${safeName},
+        messageInput.value = `Hola ${safeName},
 
 Gracias por contactarte con FlexBoxco para cotizar tu producto. Adjuntamos en este correo el detalle de la cotización solicitada.
 
@@ -405,8 +429,9 @@ Equipo FlexBoxco`;
     }
   }
 
-  // ------- Modal: abrir / cerrar -------
-
+  // ===============================
+  // Modal: abrir / cerrar
+  // ===============================
   function openModal(quote) {
     if (!modalOverlay || !quote) return;
 
@@ -471,8 +496,9 @@ Equipo FlexBoxco`;
     }
   });
 
-  // ------- Formulario: opciones avanzadas -------
-
+  // ===============================
+  // Opciones avanzadas del formulario
+  // ===============================
   if (advancedToggle && advancedSection) {
     advancedToggle.addEventListener("click", (event) => {
       event.preventDefault();
@@ -480,8 +506,9 @@ Equipo FlexBoxco`;
     });
   }
 
-  // ------- File input (PDF) -------
-
+  // ===============================
+  // File input (PDF)
+  // ===============================
   if (pdfTrigger && pdfInput) {
     pdfTrigger.addEventListener("click", (event) => {
       event.preventDefault();
@@ -542,8 +569,9 @@ Equipo FlexBoxco`;
     });
   }
 
-  // ------- Envío REAL del formulario (llamando a tu backend) -------
-
+  // ===============================
+  // Envío REAL del formulario (backend + actualizar status)
+  // ===============================
   if (replyForm && sendBtn) {
     replyForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -686,8 +714,9 @@ Equipo FlexBoxco`;
     });
   }
 
-  // ------- Eventos filtros -------
-
+  // ===============================
+  // Filtros
+  // ===============================
   if (searchInput) {
     searchInput.addEventListener("input", applyFiltersAndRender);
   }
@@ -706,6 +735,34 @@ Equipo FlexBoxco`;
     });
   }
 
-  // Cargar datos iniciales
-  loadQuotes();
+  // ===============================
+  // Logout (Cerrar sesión)
+  // ===============================
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (event) => {
+      event.preventDefault(); // para que no navegue como link
+      try {
+        await signOut(auth);
+        window.location.href = LOGIN_URL;
+      } catch (err) {
+        console.error("Error al cerrar sesión:", err);
+      }
+    });
+  }
+
+  // ===============================
+  // Protección de ruta con Auth
+  // ===============================
+  onAuthStateChanged(auth, (user) => {
+    // Si NO hay usuario autenticado -> mandamos al login
+    if (!user) {
+      if (!window.location.pathname.endsWith("login.html")) {
+        window.location.href = LOGIN_URL;
+      }
+      return;
+    }
+
+    // ✅ Si hay usuario, cargamos las cotizaciones
+    loadQuotes();
+  });
 });

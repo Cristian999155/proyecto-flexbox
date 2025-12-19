@@ -1,0 +1,110 @@
+<!-- login.html -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Login | Panel administrativo FlexBoxco</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/login.css" />
+  </head>
+  <body class="login-body">
+    <main class="login-page">
+      <section class="login-card" aria-labelledby="login-title">
+        <header class="login-header">
+          <div class="brand-mark">
+            <span class="brand-initials">FB</span>
+          </div>
+          <div class="brand-text">
+            <h1 id="login-title" class="login-title">Panel administrativo</h1>
+            <p class="login-subtitle">
+              Accede con tu cuenta de administrador de FlexBoxco.
+            </p>
+          </div>
+        </header>
+
+        <form id="login-form" class="login-form" novalidate>
+          <div
+            id="form-error"
+            class="form-message form-message--error"
+            aria-live="polite"
+          ></div>
+          <div
+            id="form-status"
+            class="form-message form-message--success"
+            aria-live="polite"
+          ></div>
+
+          <div class="form-field">
+            <label for="email" class="field-label">Correo electrónico</label>
+            <div class="field-control">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="text-input"
+                autocomplete="email"
+                required
+                placeholder="admin@flexboxco.com"
+              />
+            </div>
+            <p id="email-error" class="field-error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-field">
+            <div class="field-label-row">
+              <label for="password" class="field-label">Contraseña</label>
+            </div>
+            <div class="field-control field-control--password">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="text-input"
+                autocomplete="current-password"
+                required
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                id="password-toggle"
+                aria-label="Mostrar u ocultar contraseña"
+              >
+                👁
+              </button>
+            </div>
+            <p id="password-error" class="field-error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-row form-row--between">
+            <button
+              type="button"
+              class="link-button"
+              id="forgot-password-btn"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
+          <div class="form-row">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="login-submit"
+            >
+              Ingresar
+            </button>
+          </div>
+        </form>
+
+        <footer class="login-footer">
+          <p class="login-footer-text">
+            Acceso restringido. Solo personal autorizado de FlexBoxco.
+          </p>
+        </footer>
+      </section>
+    </main>
+
+    <script type="module" src="/js/login.js"></script>
+  </body>
+</html>

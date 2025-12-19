@@ -1,377 +1,183 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <title>Dashboard de cotizaciones | FlexBoxco</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Tipografía -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/css/paneladmin.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="sidebar-brand">
-          <div class="brand-logo-circle">FB</div>
-          <div class="brand-text">
-            <span class="brand-title">FlexBoxco</span>
-            <span class="brand-subtitle">Admin Panel</span>
-          </div>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard de cotizaciones | FlexBoxco</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/paneladmin.css" />
+</head>
+
+<body>
+  <div class="app-shell"> <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo-circle">FB</div>
+        <div class="brand-text"> <span class="brand-title">FlexBoxco</span> <span class="brand-subtitle">Admin
+            Panel</span> </div>
+      </div>
+      <nav class="sidebar-nav" aria-label="Navegación principal"> <a href="#" class="sidebar-link sidebar-link--active">
+          <span class="sidebar-link-bullet"></span> Dashboard </a> <a href="#" class="sidebar-link"> <span
+            class="sidebar-link-bullet"></span> Cotizaciones </a> <a href="#" class="sidebar-link"> <span
+            class="sidebar-link-bullet"></span> Calculadora </a> <a href="#" class="sidebar-link"> <span
+            class="sidebar-link-bullet"></span> Ajustes </a> <a href="#" class="sidebar-link"> <span
+            class="sidebar-link-bullet"></span> Soporte </a> <a id="logout-btn" class="sidebar-link"> <span
+            class="sidebar-link-bullet"></span> Cerrar Sesión </a> </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">C</div>
+          <div class="sidebar-user-text"> <span class="sidebar-user-name">Cristian Silva</span> <span
+              class="sidebar-user-role">Administrador</span> </div>
         </div>
-
-        <nav class="sidebar-nav" aria-label="Navegación principal">
-          <a href="#" class="sidebar-link sidebar-link--active">
-            <span class="sidebar-link-bullet"></span>
-            Dashboard
-          </a>
-          <a href="#" class="sidebar-link">
-            <span class="sidebar-link-bullet"></span>
-            Cotizaciones
-          </a>
-          <a href="#" class="sidebar-link">
-            <span class="sidebar-link-bullet"></span>
-            Calculadora
-          </a>
-          <a href="#" class="sidebar-link">
-            <span class="sidebar-link-bullet"></span>
-            Ajustes
-          </a>
-          <a href="#" class="sidebar-link">
-            <span class="sidebar-link-bullet"></span>
-            Soporte
-          </a>
-        </nav>
-
-        <div class="sidebar-footer">
-          <div class="sidebar-user">
-            <div class="sidebar-user-avatar">C</div>
-            <div class="sidebar-user-text">
-              <span class="sidebar-user-name">Cristian Silva</span>
-              <span class="sidebar-user-role">Administrador</span>
-            </div>
-          </div>
+      </div>
+    </aside> <!-- Contenido principal -->
+    <main class="dashboard-main"> <!-- Header de la sección -->
+      <header class="main-header-bar">
+        <div>
+          <h1 class="page-title">Gestionar cotizaciones</h1>
+          <p class="page-subtitle"> Visualiza y administra las solicitudes de cotización creadas desde el sitio web.
+          </p>
         </div>
-      </aside>
-
-      <!-- Contenido principal -->
-      <main class="dashboard-main">
-        <!-- Header de la sección -->
-        <header class="main-header-bar">
-          <div>
-            <h1 class="page-title">Gestionar cotizaciones</h1>
-            <p class="page-subtitle">
-              Visualiza y administra las solicitudes de cotización creadas desde el sitio web.
-            </p>
+        <div class="header-actions"> <button class="btn-secondary" type="button">Exportar</button> <button
+            class="btn-primary" type="button">Nueva cotización</button> </div>
+      </header> <!-- Filtros -->
+      <section class="card card-filters" aria-label="Filtros de cotizaciones">
+        <div class="filters-row">
+          <div class="filter-group filter-search"> <label for="search-input" class="filter-label">Buscar</label>
+            <div class="input-with-icon"> <span class="input-icon" aria-hidden="true">🔍</span> <input id="search-input"
+                type="text" class="text-input" placeholder="Buscar por cliente, producto o ID..." /> </div>
           </div>
-          <div class="header-actions">
-            <button class="btn-secondary" type="button">Exportar</button>
-            <button class="btn-primary" type="button">Nueva cotización</button>
-          </div>
-        </header>
-
-        <!-- Filtros -->
-        <section class="card card-filters" aria-label="Filtros de cotizaciones">
-          <div class="filters-row">
-            <div class="filter-group filter-search">
-              <label for="search-input" class="filter-label">Buscar</label>
-              <div class="input-with-icon">
-                <span class="input-icon" aria-hidden="true">🔍</span>
-                <input
-                  id="search-input"
-                  type="text"
-                  class="text-input"
-                  placeholder="Buscar por cliente, producto o ID..."
-                />
-              </div>
-            </div>
-
-            <div class="filter-group">
-              <label for="date-from" class="filter-label">Desde</label>
-              <input
-                id="date-from"
-                type="date"
-                class="text-input"
-              />
-            </div>
-
-            <div class="filter-group">
-              <label for="date-to" class="filter-label">Hasta</label>
-              <input
-                id="date-to"
-                type="date"
-                class="text-input"
-              />
-            </div>
-
-            <div class="filter-group filter-actions">
-              <button id="clear-filters" type="button" class="btn-ghost">
-                Limpiar filtros
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Tabla -->
-        <section class="card card-table" aria-label="Listado de cotizaciones">
-          <div class="card-header">
-            <h2 class="card-title">Cotizaciones recientes</h2>
-            <span class="card-subtitle" id="quotes-count">
-              Cargando...
-            </span>
-          </div>
-
-          <div class="table-wrapper">
-            <table class="quotes-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre cliente</th>
-                  <th>Producto</th>
-                  <th>Fecha solicitud</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody id="quotes-tbody">
-                <!-- Filas generadas por JS -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <!-- Modal "Responder cotización" -->
-    <div
-      class="modal-overlay"
-      id="quote-modal-overlay"
-      aria-hidden="true"
-    >
-      <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="quote-modal-title"
-      >
-        <button
-          type="button"
-          class="modal-close"
-          id="quote-modal-close"
-          aria-label="Cerrar detalle de cotización"
-        >
-          ×
-        </button>
-
-        <header class="modal-header">
-          <div>
-            <h2 class="modal-title" id="quote-modal-title">
-              Responder cotización
-            </h2>
-            <p class="modal-subtitle">
-              Cotización:
-              <span id="modal-quote-code">—</span>
-            </p>
-          </div>
-          <span
-            id="modal-status-badge"
-            class="status-badge status-pending"
-          >
-            Pendiente
+          <div class="filter-group"> <label for="date-from" class="filter-label">Desde</label> <input id="date-from"
+              type="date" class="text-input" /> </div>
+          <div class="filter-group"> <label for="date-to" class="filter-label">Hasta</label> <input id="date-to"
+              type="date" class="text-input" /> </div>
+          <div class="filter-group filter-actions"> <button id="clear-filters" type="button" class="btn-ghost"> Limpiar
+              filtros </button> </div>
+        </div>
+      </section> <!-- Tabla -->
+      <section class="card card-table" aria-label="Listado de cotizaciones">
+        <div class="card-header">
+          <h2 class="card-title">Cotizaciones recientes</h2> <span class="card-subtitle" id="quotes-count"> Cargando...
           </span>
-        </header>
-
-        <div class="modal-body">
-          <div class="modal-body-grid">
-            <!-- Columna izquierda: datos de la solicitud -->
-            <section class="modal-section">
-              <h3 class="modal-section-title">Datos del cliente</h3>
-              <dl class="details-list">
-                <div class="details-row">
-                  <dt>Cliente</dt>
-                  <dd id="detail-fullName">—</dd>
+        </div>
+        <div class="table-wrapper">
+          <table class="quotes-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre cliente</th>
+                <th>Producto</th>
+                <th>Fecha solicitud</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="quotes-tbody"> <!-- Filas generadas por JS --> </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div> <!-- Modal "Responder cotización" -->
+  <div class="modal-overlay" id="quote-modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="quote-modal-title"> <button type="button"
+        class="modal-close" id="quote-modal-close" aria-label="Cerrar detalle de cotización"> × </button>
+      <header class="modal-header">
+        <div>
+          <h2 class="modal-title" id="quote-modal-title"> Responder cotización </h2>
+          <p class="modal-subtitle"> Cotización: <span id="modal-quote-code">—</span> </p>
+        </div> <span id="modal-status-badge" class="status-badge status-pending"> Pendiente </span>
+      </header>
+      <div class="modal-body">
+        <div class="modal-body-grid"> <!-- Columna izquierda: datos de la solicitud -->
+          <section class="modal-section">
+            <h3 class="modal-section-title">Datos del cliente</h3>
+            <dl class="details-list">
+              <div class="details-row">
+                <dt>Cliente</dt>
+                <dd id="detail-fullName">—</dd>
+              </div>
+              <div class="details-row">
+                <dt>Correo</dt>
+                <dd>
+                  <div class="details-inline"> <span id="detail-email-text">—</span> </div>
+                </dd>
+              </div>
+              <div class="details-row">
+                <dt>Teléfono</dt>
+                <dd id="detail-phone">—</dd>
+              </div>
+              <div class="details-row">
+                <dt>Fecha solicitud</dt>
+                <dd id="detail-createdAt">—</dd>
+              </div>
+              <div class="details-row">
+                <dt>Ubicación</dt>
+                <dd id="detail-location">—</dd>
+              </div>
+            </dl>
+            <h3 class="modal-section-title">Detalles de la solicitud</h3>
+            <dl class="details-list">
+              <div class="details-row">
+                <dt>Producto</dt>
+                <dd id="detail-productName">—</dd>
+              </div>
+            </dl>
+            <div id="detail-links-block" class="details-links-block" hidden>
+              <h4 class="details-links-title">Enlaces del producto</h4>
+              <div class="details-scroll-box" id="detail-links-scroll">
+                <ul id="detail-links-list" class="details-links-list"> <!-- Links generados por JS --> </ul>
+              </div>
+            </div>
+            <div id="detail-comments-block" class="details-links-block" hidden>
+              <h4 class="details-links-title">Mensaje del cliente</h4>
+              <div class="details-scroll-box" id="detail-comments-scroll">
+                <p id="detail-comments-text" class="details-comments-text"></p>
+              </div>
+            </div>
+          </section> <!-- Columna derecha: formulario de respuesta -->
+          <section class="modal-section">
+            <h3 class="modal-section-title">Correo de respuesta</h3>
+            <form id="quote-reply-form" novalidate>
+              <div class="form-field"> <label for="reply-subject" class="field-label">Asunto</label> <input type="text"
+                  id="reply-subject" class="text-input text-input--block" required />
+                <p class="field-error" id="error-subject"></p>
+              </div>
+              <div class="form-field"> <label for="reply-message" class="field-label">Mensaje</label> <textarea
+                  id="reply-message" class="text-area" rows="6" required></textarea>
+                <p class="field-error" id="error-message"></p>
+              </div> <button type="button" class="btn-ghost btn-advanced-toggle" id="advanced-toggle"> Opciones
+                avanzadas </button>
+              <div class="advanced-section" id="advanced-section" hidden>
+                <div class="form-field"> <label for="reply-to" class="field-label"> Reply-to (responder a) </label>
+                  <input type="email" id="reply-to" class="text-input text-input--block" placeholder="Opcional" />
                 </div>
-                <div class="details-row">
-                  <dt>Correo</dt>
-                  <dd>
-                    <div class="details-inline">
-                      <span id="detail-email-text">—</span>
-                    </div>
-                  </dd>
+                <div class="form-field"> <label for="reply-cc" class="field-label">CC</label> <input type="text"
+                    id="reply-cc" class="text-input text-input--block" placeholder="Correos separados por coma" />
                 </div>
-                <div class="details-row">
-                  <dt>Teléfono</dt>
-                  <dd id="detail-phone">—</dd>
-                </div>
-                <div class="details-row">
-                  <dt>Fecha solicitud</dt>
-                  <dd id="detail-createdAt">—</dd>
-                </div>
-                <div class="details-row">
-                  <dt>Ubicación</dt>
-                  <dd id="detail-location">—</dd>
-                </div>
-              </dl>
-
-              <h3 class="modal-section-title">Detalles de la solicitud</h3>
-              <dl class="details-list">
-                <div class="details-row">
-                  <dt>Producto</dt>
-                  <dd id="detail-productName">—</dd>
-                </div>
-              </dl>
-
-              <div id="detail-links-block" class="details-links-block" hidden>
-                <h4 class="details-links-title">Enlaces del producto</h4>
-                <div class="details-scroll-box" id="detail-links-scroll">
-                  <ul id="detail-links-list" class="details-links-list">
-                    <!-- Links generados por JS -->
-                  </ul>
+                <div class="form-field"> <label for="reply-bcc" class="field-label">BCC</label> <input type="text"
+                    id="reply-bcc" class="text-input text-input--block" placeholder="Correos separados por coma" />
                 </div>
               </div>
-
-              <div
-                id="detail-comments-block"
-                class="details-links-block"
-                hidden
-              >
-                <h4 class="details-links-title">Mensaje del cliente</h4>
-                <div class="details-scroll-box" id="detail-comments-scroll">
-                  <p
-                    id="detail-comments-text"
-                    class="details-comments-text"
-                  ></p>
-                </div>
+              <div class="form-field"> <label for="pdf-file" class="field-label">Adjuntar PDF</label>
+                <div class="file-input-wrapper"> <input type="file" id="pdf-file" class="file-input"
+                    accept="application/pdf" /> <button type="button" class="btn-secondary btn-file-trigger"
+                    id="pdf-trigger"> Elegir archivo </button> <span class="file-helper-text"> Solo PDF, máximo 10 MB.
+                  </span> </div>
+                <div class="file-selected" id="file-selected" hidden> <span id="file-selected-name"></span> <button
+                    type="button" class="btn-link" id="file-remove"> Quitar </button> </div>
+                <p class="field-error" id="error-pdf"></p>
               </div>
-            </section>
-
-            <!-- Columna derecha: formulario de respuesta -->
-            <section class="modal-section">
-              <h3 class="modal-section-title">Correo de respuesta</h3>
-
-              <form id="quote-reply-form" novalidate>
-                <div class="form-field">
-                  <label for="reply-subject" class="field-label">Asunto</label>
-                  <input
-                    type="text"
-                    id="reply-subject"
-                    class="text-input text-input--block"
-                    required
-                  />
-                  <p class="field-error" id="error-subject"></p>
-                </div>
-
-                <div class="form-field">
-                  <label for="reply-message" class="field-label">Mensaje</label>
-                  <textarea
-                    id="reply-message"
-                    class="text-area"
-                    rows="6"
-                    required
-                  ></textarea>
-                  <p class="field-error" id="error-message"></p>
-                </div>
-
-                <button
-                  type="button"
-                  class="btn-ghost btn-advanced-toggle"
-                  id="advanced-toggle"
-                >
-                  Opciones avanzadas
-                </button>
-
-                <div class="advanced-section" id="advanced-section" hidden>
-                  <div class="form-field">
-                    <label for="reply-to" class="field-label">
-                      Reply-to (responder a)
-                    </label>
-                    <input
-                      type="email"
-                      id="reply-to"
-                      class="text-input text-input--block"
-                      placeholder="Opcional"
-                    />
-                  </div>
-                  <div class="form-field">
-                    <label for="reply-cc" class="field-label">CC</label>
-                    <input
-                      type="text"
-                      id="reply-cc"
-                      class="text-input text-input--block"
-                      placeholder="Correos separados por coma"
-                    />
-                  </div>
-                  <div class="form-field">
-                    <label for="reply-bcc" class="field-label">BCC</label>
-                    <input
-                      type="text"
-                      id="reply-bcc"
-                      class="text-input text-input--block"
-                      placeholder="Correos separados por coma"
-                    />
-                  </div>
-                </div>
-
-                <div class="form-field">
-                  <label for="pdf-file" class="field-label">Adjuntar PDF</label>
-                  <div class="file-input-wrapper">
-                    <input
-                      type="file"
-                      id="pdf-file"
-                      class="file-input"
-                      accept="application/pdf"
-                    />
-                    <button
-                      type="button"
-                      class="btn-secondary btn-file-trigger"
-                      id="pdf-trigger"
-                    >
-                      Elegir archivo
-                    </button>
-                    <span class="file-helper-text">
-                      Solo PDF, máximo 10 MB.
-                    </span>
-                  </div>
-                  <div class="file-selected" id="file-selected" hidden>
-                    <span id="file-selected-name"></span>
-                    <button
-                      type="button"
-                      class="btn-link"
-                      id="file-remove"
-                    >
-                      Quitar
-                    </button>
-                  </div>
-                  <p class="field-error" id="error-pdf"></p>
-                </div>
-
-                <p class="modal-form-status" id="modal-form-status"></p>
-
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn-secondary"
-                    id="quote-modal-close-secondary"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    class="btn-primary"
-                    id="quote-modal-send"
-                  >
-                    Enviar
-                  </button>
-                </div>
-              </form>
-            </section>
-          </div>
+              <p class="modal-form-status" id="modal-form-status"></p>
+              <div class="modal-footer"> <button type="button" class="btn-secondary" id="quote-modal-close-secondary">
+                  Cancelar </button> <button type="submit" class="btn-primary" id="quote-modal-send"> Enviar </button>
+              </div>
+            </form>
+          </section>
         </div>
       </div>
     </div>
+  </div>
+  <script type="module" src="/js/paneladmin.js"></script>
+</body>
 
-    <script type="module" src="/js/paneladmin.js"></script>
-  </body>
 </html>
