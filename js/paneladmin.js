@@ -41,7 +41,7 @@ const auth = getAuth(app);
 const LOGIN_URL = "login.html";
 
 // 🔴 PARA DESARROLLO LOCAL
-const BACKEND_BASE_URL = "http://localhost:3000";
+const BACKEND_BASE_URL = "https://proyecto-flexbox-node.onrender.com";
 // 👉 Cuando despliegues a Render, cambia a:
 // const BACKEND_BASE_URL = "https://flexboxco-email-service.onrender.com";
 
@@ -59,6 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const dateToInput = document.getElementById("date-to");
   const clearFiltersBtn = document.getElementById("clear-filters");
   const quotesCountEl = document.getElementById("quotes-count");
+
+  // Sidebar / drawer
+  const sidebar = document.getElementById("sidebar");
+  const sidebarToggle = document.getElementById("sidebar-toggle");
+  const sidebarCloseBtn = document.getElementById("sidebar-close");
+  const sidebarOverlay = document.getElementById("sidebar-overlay");
 
   // 🔹 Botón de cerrar sesión en el sidebar
   const logoutBtn = document.getElementById("logout-btn");
@@ -110,6 +116,72 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastFocusedBeforeModal = null;
   let currentQuote = null;
   let currentQuoteData = null;
+
+  // Helpers de bloqueo de scroll (modal + sidebar)
+  function isModalOpen() {
+    return modalOverlay && modalOverlay.classList.contains("is-open");
+  }
+  function isSidebarOpen() {
+    return sidebar && sidebar.classList.contains("sidebar--open");
+  }
+  function lockBodyScroll() {
+    document.body.classList.add("no-scroll");
+  }
+  function unlockBodyScrollIfSafe() {
+    // Solo quitamos el no-scroll si NO hay nada abierto que lo requiera
+    if (!isModalOpen() && !isSidebarOpen()) {
+      document.body.classList.remove("no-scroll");
+    }
+  }
+
+  // ===============================
+  // Sidebar drawer helpers
+  // ===============================
+  function openSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.add("sidebar--open");
+    if (sidebarOverlay) {
+      sidebarOverlay.classList.add("is-visible");
+      sidebarOverlay.setAttribute("aria-hidden", "false");
+    }
+    lockBodyScroll();
+    if (sidebarToggle) {
+      sidebarToggle.setAttribute("aria-expanded", "true");
+    }
+  }
+
+  function closeSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.remove("sidebar--open");
+    if (sidebarOverlay) {
+      sidebarOverlay.classList.remove("is-visible");
+      sidebarOverlay.setAttribute("aria-hidden", "true");
+    }
+    unlockBodyScrollIfSafe();
+    if (sidebarToggle) {
+      sidebarToggle.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", () => {
+      const isOpen = sidebar?.classList.contains("sidebar--open");
+      if (isOpen) closeSidebar();
+      else openSidebar();
+    });
+  }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener("click", () => {
+      closeSidebar();
+    });
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener("click", () => {
+      closeSidebar();
+    });
+  }
 
   // ===============================
   // Utilidades
@@ -275,23 +347,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!filtered.length) {
-      setTableMessage(
-        "No se encontraron cotizaciones con los filtros actuales."
-      );
+      setTableMessage("No se encontraron cotizaciones con los filtros actuales.");
       return;
     }
 
     tbody.innerHTML = filtered
       .map((q) => {
-        const { label: statusLabel, className: statusClass } = statusMeta(
-          q.status
-        );
+        const { label: statusLabel, className: statusClass } = statusMeta(q.status);
         return `
           <tr class="table-row" data-doc-id="${q.docId}">
             <td class="cell-id">${q.uiCode}</td>
-            <td>${q.fullName || "—"}</td>
-            <td>${q.productName || "—"}</td>
-            <td>${formatDate(q.createdAt)}</td>
+            <td class="col-hide-mobile">${q.fullName || "—"}</td>
+            <td class="col-hide-mobile">${q.productName || "—"}</td>
+            <td class="col-hide-mobile">${formatDate(q.createdAt)}</td>
             <td>
               <span class="status-badge ${statusClass}">
                 ${statusLabel}
@@ -314,14 +382,8 @@ document.addEventListener("DOMContentLoaded", () => {
     currentQuote = quote;
     currentQuoteData = quote.raw || null;
 
-    if (modalTitle) {
-      modalTitle.textContent = "Responder cotización";
-    }
-
-    if (modalQuoteCode) {
-      modalQuoteCode.textContent = quote.uiCode || "—";
-    }
-
+    if (modalTitle) modalTitle.textContent = "Responder cotización";
+    if (modalQuoteCode) modalQuoteCode.textContent = quote.uiCode || "—";
     fillStatusBadge(quote.status);
 
     // Placeholders iniciales
@@ -329,9 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (detailEmailText) detailEmailText.textContent = "Cargando...";
     if (detailPhone) detailPhone.textContent = "Cargando...";
     if (detailCreatedAt) {
-      detailCreatedAt.textContent = quote.createdAt
-        ? formatDate(quote.createdAt)
-        : "—";
+      detailCreatedAt.textContent = quote.createdAt ? formatDate(quote.createdAt) : "—";
     }
     if (detailLocation) detailLocation.textContent = "Cargando...";
     if (detailProductName) detailProductName.textContent = "Cargando...";
@@ -362,16 +422,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const department = data.department || "";
       const city = data.city || "";
       const comments = data.comments || "";
-      const links = Array.isArray(data.productLinksList)
-        ? data.productLinksList
-        : [];
+      const links = Array.isArray(data.productLinksList) ? data.productLinksList : [];
 
       let location = "—";
-      if (department && city) {
-        location = `${department}, ${city}`;
-      } else if (department || city) {
-        location = department || city;
-      }
+      if (department && city) location = `${department}, ${city}`;
+      else if (department || city) location = department || city;
 
       if (detailFullName) detailFullName.textContent = fullName;
       if (detailEmailText) detailEmailText.textContent = email;
@@ -422,8 +477,7 @@ Equipo FlexBoxco`;
     } catch (error) {
       console.error("Error cargando detalle de cotización:", error);
       if (modalFormStatus) {
-        modalFormStatus.textContent =
-          "No fue posible cargar todos los datos de la cotización.";
+        modalFormStatus.textContent = "No fue posible cargar todos los datos de la cotización.";
         modalFormStatus.classList.add("modal-form-status--error");
       }
     }
@@ -441,6 +495,9 @@ Equipo FlexBoxco`;
     modalOverlay.classList.add("is-open");
     modalOverlay.setAttribute("aria-hidden", "false");
 
+    // ✅ bloquear scroll del fondo (pero el modal scrollea por dentro)
+    lockBodyScroll();
+
     // Cargar datos del documento
     loadQuoteDetails(quote);
 
@@ -455,10 +512,10 @@ Equipo FlexBoxco`;
     modalOverlay.classList.remove("is-open");
     modalOverlay.setAttribute("aria-hidden", "true");
 
-    if (
-      lastFocusedBeforeModal &&
-      typeof lastFocusedBeforeModal.focus === "function"
-    ) {
+    // ✅ liberar scroll solo si no está el sidebar abierto
+    unlockBodyScrollIfSafe();
+
+    if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === "function") {
       lastFocusedBeforeModal.focus();
     }
   }
@@ -483,16 +540,20 @@ Equipo FlexBoxco`;
       }
     });
   }
-  if (modalCloseBtn) {
-    modalCloseBtn.addEventListener("click", closeModal);
-  }
-  if (modalCloseSecondary) {
-    modalCloseSecondary.addEventListener("click", closeModal);
-  }
+  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
+  if (modalCloseSecondary) modalCloseSecondary.addEventListener("click", closeModal);
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      closeModal();
+      // Prioridad: cerrar modal si está abierto
+      if (modalOverlay && modalOverlay.classList.contains("is-open")) {
+        closeModal();
+        return;
+      }
+      // Luego cerrar sidebar si está abierto
+      if (sidebar && sidebar.classList.contains("sidebar--open")) {
+        closeSidebar();
+      }
     }
   });
 
@@ -546,8 +607,7 @@ Equipo FlexBoxco`;
         if (fileSelected) fileSelected.hidden = true;
         if (fileSelectedName) fileSelectedName.textContent = "";
         if (errorPdf)
-          errorPdf.textContent =
-            "El archivo supera el tamaño máximo de 10 MB.";
+          errorPdf.textContent = "El archivo supera el tamaño máximo de 10 MB.";
         return;
       }
 
@@ -613,20 +673,17 @@ Equipo FlexBoxco`;
       }
 
       if (!subject) {
-        if (errorSubject)
-          errorSubject.textContent = "Ingresa un asunto para el correo.";
+        if (errorSubject) errorSubject.textContent = "Ingresa un asunto para el correo.";
         isValid = false;
       }
 
       if (!message) {
-        if (errorMessage)
-          errorMessage.textContent = "Ingresa un mensaje para el correo.";
+        if (errorMessage) errorMessage.textContent = "Ingresa un mensaje para el correo.";
         isValid = false;
       }
 
       if (!file) {
-        if (errorPdf)
-          errorPdf.textContent = "Adjunta el PDF de la cotización.";
+        if (errorPdf) errorPdf.textContent = "Adjunta el PDF de la cotización.";
         isValid = false;
       }
 
@@ -648,16 +705,13 @@ Equipo FlexBoxco`;
       }
 
       try {
-        const response = await fetch(
-          `${BACKEND_BASE_URL}/api/send-quote-email`,
-          {
-            method: "POST",
-            headers: {
-              "x-admin-key": ADMIN_KEY_FRONTEND,
-            },
-            body: formData,
-          }
-        );
+        const response = await fetch(`${BACKEND_BASE_URL}/api/send-quote-email`, {
+          method: "POST",
+          headers: {
+            "x-admin-key": ADMIN_KEY_FRONTEND,
+          },
+          body: formData,
+        });
 
         const data = await response.json().catch(() => null);
 
@@ -681,10 +735,9 @@ Equipo FlexBoxco`;
         // ✅ Actualizar estado en Firestore a "enviada"
         if (currentQuote && currentQuote.docId) {
           try {
-            await updateDoc(
-              doc(db, "cotizacionesPersonalizadas", currentQuote.docId),
-              { status: "enviada" }
-            );
+            await updateDoc(doc(db, "cotizacionesPersonalizadas", currentQuote.docId), {
+              status: "enviada",
+            });
 
             // Actualizamos en memoria
             currentQuote.status = "enviada";
@@ -717,15 +770,10 @@ Equipo FlexBoxco`;
   // ===============================
   // Filtros
   // ===============================
-  if (searchInput) {
-    searchInput.addEventListener("input", applyFiltersAndRender);
-  }
-  if (dateFromInput) {
-    dateFromInput.addEventListener("change", applyFiltersAndRender);
-  }
-  if (dateToInput) {
-    dateToInput.addEventListener("change", applyFiltersAndRender);
-  }
+  if (searchInput) searchInput.addEventListener("input", applyFiltersAndRender);
+  if (dateFromInput) dateFromInput.addEventListener("change", applyFiltersAndRender);
+  if (dateToInput) dateToInput.addEventListener("change", applyFiltersAndRender);
+
   if (clearFiltersBtn) {
     clearFiltersBtn.addEventListener("click", () => {
       if (searchInput) searchInput.value = "";
@@ -740,7 +788,7 @@ Equipo FlexBoxco`;
   // ===============================
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async (event) => {
-      event.preventDefault(); // para que no navegue como link
+      event.preventDefault();
       try {
         await signOut(auth);
         window.location.href = LOGIN_URL;
@@ -754,15 +802,12 @@ Equipo FlexBoxco`;
   // Protección de ruta con Auth
   // ===============================
   onAuthStateChanged(auth, (user) => {
-    // Si NO hay usuario autenticado -> mandamos al login
     if (!user) {
       if (!window.location.pathname.endsWith("login.html")) {
         window.location.href = LOGIN_URL;
       }
       return;
     }
-
-    // ✅ Si hay usuario, cargamos las cotizaciones
     loadQuotes();
   });
 });

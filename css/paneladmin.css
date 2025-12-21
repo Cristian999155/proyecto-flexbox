@@ -8,15 +8,16 @@
   --color-border-subtle: #e5e7eb;
   --color-text-main: #111827;
   --color-text-muted: #6b7280;
-  --color-accent: #ff7a00;
-  /* naranja flexboxco */
+  --color-accent: #ff7a00; /* naranja flexboxco */
   --color-accent-soft: rgba(255, 122, 0, 0.1);
   --color-success: #16a34a;
   --color-danger: #dc2626;
   --color-warning: #f97316;
+
   --radius-lg: 16px;
   --radius-full: 999px;
   --shadow-card: 0 18px 40px rgba(15, 23, 42, 0.12);
+
   --sidebar-width: 240px;
 }
 
@@ -31,18 +32,33 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
   color: var(--color-text-main);
   background-color: var(--color-bg-page);
 }
 
+/* Focus accesible */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
 /* ========== LAYOUT PRINCIPAL ========== */
+
 .app-shell {
   display: flex;
   min-height: 100vh;
+  align-items: stretch;
 }
 
 /* ----- Sidebar ----- */
+
 .sidebar {
   width: var(--sidebar-width);
   background-color: var(--color-sidebar-bg);
@@ -50,6 +66,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 18px 16px;
+  min-height: 100vh;
 }
 
 .sidebar-brand {
@@ -101,7 +118,8 @@ body {
   font-size: 0.9rem;
   color: var(--color-sidebar-text);
   opacity: 0.9;
-  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.08s ease;
+  transition: background-color 0.15s ease, opacity 0.15s ease,
+    transform 0.08s ease;
 }
 
 .sidebar-link-bullet {
@@ -165,7 +183,26 @@ body {
   color: var(--color-sidebar-muted);
 }
 
+/* Botón cerrar sidebar (solo móvil) */
+.sidebar-close {
+  margin-left: auto;
+  border-radius: 999px;
+  border: none;
+  background: #1f2937;
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #e5e7eb;
+  display: none;
+}
+
+.sidebar-close:hover {
+  background-color: #374151;
+}
+
 /* ----- Área principal ----- */
+
 .dashboard-main {
   flex: 1;
   padding: 24px 32px 32px;
@@ -175,12 +212,19 @@ body {
 }
 
 /* ========== HEADER DE LA SECCIÓN ========== */
+
 .main-header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 4px;
+}
+
+.main-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .page-title {
@@ -195,7 +239,30 @@ body {
   color: var(--color-text-muted);
 }
 
+/* Botón hamburguesa */
+
+.sidebar-toggle {
+  display: none;
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(15, 23, 42, 0.04);
+}
+
+.sidebar-toggle-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--color-text-main);
+  display: block;
+}
+
 /* Botones genéricos */
+
 .btn-primary,
 .btn-secondary,
 .btn-ghost {
@@ -205,7 +272,8 @@ body {
   font-weight: 600;
   padding: 8px 18px;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.05s ease;
   font-family: inherit;
 }
 
@@ -263,6 +331,7 @@ body {
 }
 
 /* ========== CARDS Y FILTROS ========== */
+
 .card {
   background-color: var(--color-card-bg);
   border-radius: var(--radius-lg);
@@ -340,6 +409,7 @@ body {
 }
 
 /* Textarea */
+
 .text-area {
   width: 100%;
   border-radius: 12px;
@@ -366,6 +436,7 @@ body {
 }
 
 /* ========== TABLA ========== */
+
 .card-table {
   margin-top: 4px;
 }
@@ -440,6 +511,7 @@ body {
 }
 
 /* Mensajes de estados */
+
 .table-message-row td {
   text-align: center;
   color: var(--color-text-muted);
@@ -448,6 +520,7 @@ body {
 }
 
 /* Badges de estado */
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -483,15 +556,26 @@ body {
   border-color: rgba(37, 99, 235, 0.4);
 }
 
-/* ========== MODAL NUEVO ========== */
+/* ========== MODAL NUEVO (FIX SCROLL) ========== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(15, 23, 42, 0.45);
   display: none;
-  align-items: center;
+
+  /* ✅ CLAVE: permitir scroll cuando el modal es más alto que la pantalla */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* ✅ en vez de centrar verticalmente (que rompe el scroll), lo anclamos arriba */
+  align-items: flex-start;
   justify-content: center;
-  z-index: 40;
+
+  /* ✅ separaciones para que no pegue al borde */
+  padding: 24px 12px;
+
+  z-index: 60;
 }
 
 .modal-overlay.is-open {
@@ -506,6 +590,14 @@ body {
   width: min(95%, 880px);
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
   position: relative;
+
+  /* ✅ CLAVE: modal "contenedor" con altura máxima y sin desbordar */
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+
+  /* ✅ CLAVE: para que el body sea la zona scrolleable */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -514,6 +606,9 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+
+  /* no debe encogerse */
+  flex: 0 0 auto;
 }
 
 .modal-title {
@@ -528,9 +623,17 @@ body {
   color: var(--color-text-muted);
 }
 
+/* ✅ CLAVE: el área que scrollea es el body */
 .modal-body {
   font-size: 0.9rem;
   color: var(--color-text-main);
+
+  flex: 1 1 auto;
+  min-height: 0;            /* IMPORTANTÍSIMO en contenedores flex */
+  overflow: auto;           /* scroll real */
+
+  /* opcional: un pelín de espacio para que la barra no pegue */
+  padding-right: 4px;
 }
 
 .modal-body-grid {
@@ -550,6 +653,7 @@ body {
 }
 
 /* Detalles (lado izquierdo) */
+
 .details-list {
   margin: 0;
   padding: 0;
@@ -634,6 +738,7 @@ body {
 }
 
 /* Formulario (lado derecho) */
+
 .form-field {
   display: flex;
   flex-direction: column;
@@ -657,6 +762,7 @@ body {
 }
 
 /* Avanzado */
+
 .btn-advanced-toggle {
   margin: 2px 0 8px;
   padding-inline: 0;
@@ -672,6 +778,7 @@ body {
 }
 
 /* File input */
+
 .file-input-wrapper {
   display: flex;
   align-items: center;
@@ -701,6 +808,7 @@ body {
 }
 
 /* Estado del formulario del modal */
+
 .modal-form-status {
   margin: 6px 0 4px;
   font-size: 0.8rem;
@@ -716,6 +824,7 @@ body {
 }
 
 /* Footer del modal (botones) */
+
 .modal-footer {
   margin-top: 10px;
   display: flex;
@@ -740,32 +849,28 @@ body {
   background-color: #e5e7eb;
 }
 
+/* ========== OVERLAY SIDEBAR (DRAWER) ========== */
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 40;
+}
+
+.sidebar-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* ========== RESPONSIVE ========== */
+
 @media (max-width: 992px) {
-  .app-shell {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    gap: 8px;
-    overflow-x: auto;
-  }
-
-  .sidebar-footer {
-    display: none;
-  }
-
   .dashboard-main {
-    padding: 16px 16px 24px;
+    padding: 20px 16px 24px;
   }
 
   .filters-row {
@@ -777,13 +882,87 @@ body {
   }
 }
 
+@media (max-width: 767px) {
+  .app-shell {
+    position: relative;
+  }
+
+  /* Sidebar como drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 80vw;
+    max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease-out;
+    z-index: 50;
+    padding: 18px 16px 24px;
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-main {
+    padding: 16px 16px 24px;
+  }
+
+  .main-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+
+  /* Tabla: solo ID + Estado */
+  .quotes-table th.col-hide-mobile,
+  .quotes-table td.col-hide-mobile {
+    display: none;
+  }
+
+  .quotes-table th,
+  .quotes-table td {
+    padding: 10px 10px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .btn-primary,
+  .btn-secondary {
+    width: auto;
+  }
+}
+
 @media (max-width: 768px) {
   .modal {
     max-width: 95%;
     width: 95%;
-    height: auto;
-    max-height: 90vh;
     padding: 16px 16px 14px;
+
+    /* ✅ mantenemos el comportamiento correcto también en móvil */
+    max-height: calc(100vh - 48px);
   }
 
   .modal-body-grid {
@@ -794,24 +973,5 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-  }
-}
-
-@media (max-width: 600px) {
-  .main-header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 8px;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: auto;
   }
 }
